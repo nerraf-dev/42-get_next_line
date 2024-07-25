@@ -1,0 +1,26 @@
+# Compiled object files
+*.o
+
+# Executables
+*.exe
+*.out
+
+# Dependency files
+*.d
+
+# Build directory
+/build/
+
+# IDE files
+.vscode/
+.idea/
+
+# Editor backup files
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+main
+main.c
