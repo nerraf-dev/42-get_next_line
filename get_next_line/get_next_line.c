@@ -6,7 +6,7 @@
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 16:21:52 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/25 17:33:40 by sfarren          ###   ########.fr       */
+/*   Updated: 2024/07/27 12:37:05 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ char	*get_next_line(int fd)
 	while (ret > 0)
 	{
 		buf[ret] = '\0';
+		// printf("Buffer read: %s\n", buf); // Debug print
 		if (remainder)
 		{
 			temp = ft_strjoin(remainder, buf);
@@ -53,30 +54,41 @@ char	*get_next_line(int fd)
 		}
 		else
 			remainder = ft_strdup(buf);
+		if (!remainder)
+		{
+			free(buf);
+			return (NULL);
+		}
+		// printf("Remainder after join: %s\n", remainder); // Debug print
 		newline_index = find_newline(remainder);
-		if (newline_index >= 0)
+		while (newline_index >= 0)
 		{
 			line = malloc(newline_index + 2);
 			if (!line)
 			{
 				free(buf);
+				free(remainder);
 				return (NULL);
 			}
 			ft_strlcpy(line, remainder, newline_index + 2);
 			temp = ft_strdup(remainder + newline_index + 1);
 			free(remainder);
 			remainder = temp;
+			newline_index = find_newline(remainder);
 			free(buf);
+			// printf("Returning line: %s\n", line);
 			return (line);
 		}
 		ret = read(fd, buf, BUFFER_SIZE);
 	}
+	free(buf);
 	if (remainder && *remainder)
 	{
 		line = ft_strdup(remainder);
 		free(remainder);
 		remainder = NULL;
+		// printf("Returning last line: %s\n", line);
+		return (line);
 	}
-	free(buf);
-	return (line);
+	return (NULL);
 }

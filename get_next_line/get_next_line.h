@@ -6,7 +6,7 @@
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 16:03:45 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/25 17:34:31 by sfarren          ###   ########.fr       */
+/*   Updated: 2024/07/26 14:04:41 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,12 @@
 #  define BUFFER_SIZE 16
 # endif
 
-typedef struct s_node
-{
-	char			*content;
-	struct s_node	*next;
-}	t_node;
-
 char	*get_next_line(int fd);
 char	*ft_strdup(const char *str);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 size_t	ft_strlen(const char *str);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strchr(const char *s, int c);
 
 #endif

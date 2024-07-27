@@ -60,5 +60,9 @@ int	main(int argc, char **argv)
     if (fd != 0)
         close(fd);
 
+	// printf("\n\n-- new line \n");
+	// size_t len = ft_strlen("\n");
+	// printf("new line len: %zu\n", len);
+
     return (0);
 }
