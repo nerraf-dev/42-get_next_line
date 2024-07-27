@@ -5,78 +5,107 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/23 16:21:52 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/25 17:33:40 by sfarren          ###   ########.fr       */
+/*   Created: 2024/07/27 17:48:24 by sfarren           #+#    #+#             */
+/*   Updated: 2024/07/27 20:42:43 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	find_newline(char *str)
+/**
+ * Finds the position of the first occurrence of a
+ * newline character ('\n') in a string.
+ *
+ * @param str The string to search for a newline character.
+ * @return The position of the first newline character in
+ *   the string, or 0 if not found.
+ */
+int	ft_find_nl(const char *str)
 {
 	int	i;
 
 	i = 0;
+	if (!str)
+		return (0);
 	while (str[i])
 	{
 		if (str[i] == '\n')
-			return (i);
+			return (++i);
 		i++;
 	}
-	return (-1);
+	return (0);
+}
+
+char	*ft_free_buf(char **str)
+{
+	free(*str);
+	*str = NULL;
+	return (NULL);
+}
+
+char	*ft_result_buf(char **buf)
+{
+	char	*temp;
+	char	*result_buf;
+	int		nl_loc;
+
+	temp = ft_strdup(*buf);
+	ft_free_buf(buf);
+	if (!temp)
+		return (NULL);
+	if (!ft_find_nl(temp))
+	{
+		result_buf = ft_strdup(temp);
+		ft_free_buf(&temp);
+		return (result_buf);
+	}
+	nl_loc = ft_find_nl(temp);
+	result_buf = ft_substr(temp, 0, nl_loc);
+	if (!result_buf)
+		return (ft_free_buf(&temp));
+	*buf = ft_substr(temp, nl_loc, ft_strlen(temp) - nl_loc);
+	ft_free_buf(&temp);
+	if (!*buf || !*buf[0])
+		ft_free_buf(buf);
+	return (result_buf);
+}
+
+char	*ft_new_buffer(char *buf, int fd)
+{
+	char	*new_buf;
+	int		bytes_read;
+
+	bytes_read = 1;
+	new_buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!new_buf)
+		return (NULL);
+	while (bytes_read > 0 && !ft_find_nl(buf))
+	{
+		bytes_read = read(fd, new_buf, BUFFER_SIZE);
+		if (bytes_read == -1)
+		{
+			ft_free_buf(&new_buf);
+			return (ft_free_buf(&buf));
+		}
+		new_buf[bytes_read] = '\0';
+		if (!buf && bytes_read > 0)
+			buf = ft_strdup(new_buf);
+		else if (bytes_read > 0)
+			buf = ft_strjoin(buf, new_buf);
+	}
+	ft_free_buf(&new_buf);
+	return (buf);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*remainder;
-	char		*buf;
-	char		*line;
-	int			ret;
-	int			newline_index;
-	char		*temp;
+	static char	*buf;
 
-	line = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buf = malloc(BUFFER_SIZE + 1);
+	if (!buf || !ft_find_nl(buf))
+		buf = ft_new_buffer(buf, fd);
 	if (!buf)
 		return (NULL);
-	ret = read(fd, buf, BUFFER_SIZE);
-	while (ret > 0)
-	{
-		buf[ret] = '\0';
-		if (remainder)
-		{
-			temp = ft_strjoin(remainder, buf);
-			free(remainder);
-			remainder = temp;
-		}
-		else
-			remainder = ft_strdup(buf);
-		newline_index = find_newline(remainder);
-		if (newline_index >= 0)
-		{
-			line = malloc(newline_index + 2);
-			if (!line)
-			{
-				free(buf);
-				return (NULL);
-			}
-			ft_strlcpy(line, remainder, newline_index + 2);
-			temp = ft_strdup(remainder + newline_index + 1);
-			free(remainder);
-			remainder = temp;
-			free(buf);
-			return (line);
-		}
-		ret = read(fd, buf, BUFFER_SIZE);
-	}
-	if (remainder && *remainder)
-	{
-		line = ft_strdup(remainder);
-		free(remainder);
-		remainder = NULL;
-	}
-	free(buf);
-	return (line);
+	return (ft_result_buf(&buf));
 }
