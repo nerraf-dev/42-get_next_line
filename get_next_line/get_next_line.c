@@ -6,7 +6,7 @@
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 17:48:24 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/27 20:42:43 by sfarren          ###   ########.fr       */
+/*   Updated: 2024/07/27 23:00:02 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,27 +20,39 @@
  * @return The position of the first newline character in
  *   the string, or 0 if not found.
  */
-int	ft_find_nl(const char *str)
-{
-	int	i;
 
-	i = 0;
-	if (!str)
-		return (0);
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (++i);
-		i++;
-	}
-	return (0);
+char	*ft_free_buf(char **buf)
+{
+	free(*buf);
+	*buf = NULL;
+	return (NULL);
 }
 
-char	*ft_free_buf(char **str)
+char	*ft_new_buffer(char *buf, int fd)
 {
-	free(*str);
-	*str = NULL;
-	return (NULL);
+	char	*new_buf;
+	int		bytes_read;
+
+	bytes_read = 1;
+	new_buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!new_buf)
+		return (NULL);
+	while (bytes_read > 0 && !ft_find_nl(buf))
+	{
+		bytes_read = read(fd, new_buf, BUFFER_SIZE);
+		if (bytes_read < 0)
+		{
+			ft_free_buf(&new_buf);
+			return (ft_free_buf(&buf));
+		}
+		new_buf[bytes_read] = '\0';
+		if (!buf && bytes_read > 0)
+			buf = ft_strdup(new_buf);
+		else if (bytes_read > 0)
+			buf = ft_gnl_join(buf, new_buf);
+	}
+	ft_free_buf(&new_buf);
+	return (buf);
 }
 
 char	*ft_result_buf(char **buf)
@@ -68,33 +80,6 @@ char	*ft_result_buf(char **buf)
 	if (!*buf || !*buf[0])
 		ft_free_buf(buf);
 	return (result_buf);
-}
-
-char	*ft_new_buffer(char *buf, int fd)
-{
-	char	*new_buf;
-	int		bytes_read;
-
-	bytes_read = 1;
-	new_buf = (char *)malloc(BUFFER_SIZE + 1);
-	if (!new_buf)
-		return (NULL);
-	while (bytes_read > 0 && !ft_find_nl(buf))
-	{
-		bytes_read = read(fd, new_buf, BUFFER_SIZE);
-		if (bytes_read == -1)
-		{
-			ft_free_buf(&new_buf);
-			return (ft_free_buf(&buf));
-		}
-		new_buf[bytes_read] = '\0';
-		if (!buf && bytes_read > 0)
-			buf = ft_strdup(new_buf);
-		else if (bytes_read > 0)
-			buf = ft_strjoin(buf, new_buf);
-	}
-	ft_free_buf(&new_buf);
-	return (buf);
 }
 
 char	*get_next_line(int fd)
