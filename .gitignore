@@ -26,7 +26,7 @@
 Thumbs.db
 
 # Ignore gnl_leaks and gnl.dSym folders
-gnl_leaks/
+gnl_leaks.dSym/
 gnl.dSym/
 
 # Ignore executables
