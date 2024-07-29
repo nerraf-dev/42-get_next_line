@@ -6,7 +6,7 @@
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 17:48:24 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/27 23:00:02 by sfarren          ###   ########.fr       */
+/*   Updated: 2024/07/28 01:12:41 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ char	*ft_new_buffer(char *buf, int fd)
 	bytes_read = 1;
 	new_buf = (char *)malloc(BUFFER_SIZE + 1);
 	if (!new_buf)
-		return (NULL);
+		return (ft_free_buf(&buf));
 	while (bytes_read > 0 && !ft_find_nl(buf))
 	{
 		bytes_read = read(fd, new_buf, BUFFER_SIZE);
@@ -64,7 +64,7 @@ char	*ft_result_buf(char **buf)
 	temp = ft_strdup(*buf);
 	ft_free_buf(buf);
 	if (!temp)
-		return (NULL);
+		return (ft_free_buf(&temp));
 	if (!ft_find_nl(temp))
 	{
 		result_buf = ft_strdup(temp);
