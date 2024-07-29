@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/23 16:03:45 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/25 17:34:31 by sfarren          ###   ########.fr       */
+/*   Created: 2024/07/27 17:45:21 by sfarren           #+#    #+#             */
+/*   Updated: 2024/07/27 23:56:11 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,15 @@
 # include <stdio.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 16
+#  define BUFFER_SIZE 1
 # endif
 
-typedef struct s_node
-{
-	char			*content;
-	struct s_node	*next;
-}	t_node;
-
-char	*get_next_line(int fd);
-char	*ft_strdup(const char *str);
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
-size_t	ft_strlen(const char *str);
-void	*ft_memcpy(void *dest, const void *src, size_t n);
-char	*ft_strjoin(char const *s1, char const *s2);
+char		*get_next_line(int fd);
+char		*ft_strdup(char *str);
+char		*ft_substr(char const *s, unsigned int start, size_t len);
+size_t		ft_strlen(const char *str);
+char		*ft_gnl_join(char const *s1, char const *s2);
+char		*ft_free_buf(char **str);
+int			ft_find_nl(const char *str);
 
 #endif

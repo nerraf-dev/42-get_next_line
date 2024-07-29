@@ -4,6 +4,9 @@
 # Executables
 *.exe
 *.out
+*.exe
+*.out
+*.app
 
 # Dependency files
 *.d
@@ -22,5 +25,12 @@
 .DS_Store
 Thumbs.db
 
+# Ignore gnl_leaks and gnl.dSym folders
+gnl_leaks.dSym/
+gnl.dSym/
+
+# Ignore executables
 main
 main.c
+
+*.dSym/
