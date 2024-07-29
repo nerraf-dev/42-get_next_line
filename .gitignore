@@ -24,3 +24,5 @@ Thumbs.db
 
 main
 main.c
+
+gnl_leaks*
