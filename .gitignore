@@ -34,3 +34,6 @@ main
 main.c
 
 *.dSym/
+
+gnl_leaks
+gnl_test
