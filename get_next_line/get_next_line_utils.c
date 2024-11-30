@@ -5,16 +5,16 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 19:40:23 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/25 18:18:05 by sfarren          ###   ########.fr       */
+/*   Created: 2024/07/27 17:48:33 by sfarren           #+#    #+#             */
+/*   Updated: 2024/11/30 21:47:58 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(const char *str)
+size_t	gnl_strlen(const char *str)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
 	while (str[i] != '\0')
@@ -22,78 +22,81 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char	*ft_strdup(const char *str)
+int	gnl_find_nl(const char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+	{
+		if (str[i] == '\n')
+			return (++i);
+		i++;
+	}
+	return (0);
+}
+
+char	*gnl_strdup(char *str)
 {
 	char	*str_copy;
-	size_t	len;
+	int		len;
+	int		i;
 
-	len = ft_strlen(str);
+	i = 0;
+	len = gnl_strlen(str);
 	str_copy = (char *)malloc(len +1);
 	if (!str_copy)
 		return (NULL);
-	ft_memcpy(str_copy, str, len);
-	str_copy[len] = '\0';
+	while (str[i])
+	{
+		str_copy[i] = str[i];
+		i++;
+	}
+	str_copy[i] = '\0';
 	return (str_copy);
 }
 
-/*
-ft_strlcpy() copies up to dstsize - 1 characters from the string src to dst,
- NUL-terminating the result if dstsize is not 0.
-
- return the total length of the string they tried to create,
-i.e the length of src.
-*/
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+char	*gnl_substr(char const *s, unsigned int start, size_t len)
 {
+	char	*substr;
 	size_t	i;
-	size_t	src_len;
+	size_t	j;
 
+	if (!s)
+		return (0);
+	if (start > gnl_strlen(s))
+		return (gnl_strdup(""));
+	if (start + len > gnl_strlen(s))
+		len = gnl_strlen(s) - start;
+	substr = (char *)malloc(len + 1);
+	if (!substr)
+		return (0);
 	i = 0;
-	src_len = ft_strlen(src);
-	if (dstsize != 0)
+	j = start;
+	while (i < len)
 	{
-		while (i < dstsize - 1 && src[i])
-		{
-			dst[i] = src[i];
-			i++;
-		}
-		dst[i] = '\0';
-	}
-	return (src_len);
-}
-
-void	*ft_memcpy(void *dest, const void *src, size_t n)
-{
-	size_t			i;
-	unsigned char	*d;
-	unsigned char	*s;
-
-	if (!dest && !src)
-		return (NULL);
-	i = 0;
-	d = (unsigned char *)dest;
-	s = (unsigned char *)src;
-	while (i < n)
-	{
-		d[i] = s[i];
+		substr[i] = s[j];
 		i++;
+		j++;
 	}
-	return (dest);
+	substr[i] = '\0';
+	return (substr);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*gnl_str_join(char const *s1, char const *s2)
 {
 	size_t	s1_len;
 	size_t	s2_len;
 	size_t	i;
 	char	*s3;
 
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
-	s3 = malloc(s1_len + s2_len + 1);
+	s1_len = gnl_strlen(s1);
+	s2_len = gnl_strlen(s2);
+	s3 = (char *)malloc(s1_len + s2_len + 1);
 	if (!s3)
-		return (0);
+		return (gnl_free_buf((char **)&s1));
 	i = 0;
 	while (i < s1_len)
 	{
@@ -106,5 +109,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		i++;
 	}
 	s3[i] = '\0';
+	gnl_free_buf((char **)&s1);
 	return (s3);
 }

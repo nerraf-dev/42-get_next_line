@@ -5,90 +5,92 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/23 16:21:52 by sfarren           #+#    #+#             */
-/*   Updated: 2024/07/27 12:37:05 by sfarren          ###   ########.fr       */
+/*   Created: 2024/07/27 17:48:24 by sfarren           #+#    #+#             */
+/*   Updated: 2024/11/30 21:48:35 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	find_newline(char *str)
-{
-	int	i;
+/**
+ * Finds the position of the first occurrence of a
+ * newline character ('\n') in a string.
+ *
+ * @param str The string to search for a newline character.
+ * @return The position of the first newline character in
+ *   the string, or 0 if not found.
+ */
 
-	i = 0;
-	while (str[i])
+char	*gnl_free_buf(char **buf)
+{
+	free(*buf);
+	*buf = NULL;
+	return (NULL);
+}
+
+char	*gnl_new_buffer(char *buf, int fd)
+{
+	char	*new_buf;
+	int		bytes_read;
+
+	bytes_read = 1;
+	new_buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!new_buf)
+		return (gnl_free_buf(&buf));
+	while (bytes_read > 0 && !gnl_find_nl(buf))
 	{
-		if (str[i] == '\n')
-			return (i);
-		i++;
+		bytes_read = read(fd, new_buf, BUFFER_SIZE);
+		if (bytes_read < 0)
+		{
+			gnl_free_buf(&new_buf);
+			return (gnl_free_buf(&buf));
+		}
+		new_buf[bytes_read] = '\0';
+		if (!buf && bytes_read > 0)
+			buf = gnl_strdup(new_buf);
+		else if (bytes_read > 0)
+			buf = gnl_str_join(buf, new_buf);
 	}
-	return (-1);
+	gnl_free_buf(&new_buf);
+	return (buf);
+}
+
+char	*gnl_result_buf(char **buf)
+{
+	char	*temp;
+	char	*result_buf;
+	int		nl_loc;
+
+	temp = gnl_strdup(*buf);
+	gnl_free_buf(buf);
+	if (!temp)
+		return (gnl_free_buf(&temp));
+	if (!gnl_find_nl(temp))
+	{
+		result_buf = gnl_strdup(temp);
+		gnl_free_buf(&temp);
+		return (result_buf);
+	}
+	nl_loc = gnl_find_nl(temp);
+	result_buf = gnl_substr(temp, 0, nl_loc);
+	if (!result_buf)
+		return (gnl_free_buf(&temp));
+	*buf = gnl_substr(temp, nl_loc, gnl_strlen(temp) - nl_loc);
+	gnl_free_buf(&temp);
+	if (!*buf || !*buf[0])
+		gnl_free_buf(buf);
+	return (result_buf);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*remainder;
-	char		*buf;
-	char		*line;
-	int			ret;
-	int			newline_index;
-	char		*temp;
+	static char	*buf;
 
-	line = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buf = malloc(BUFFER_SIZE + 1);
+	if (!buf || !gnl_find_nl(buf))
+		buf = gnl_new_buffer(buf, fd);
 	if (!buf)
 		return (NULL);
-	ret = read(fd, buf, BUFFER_SIZE);
-	while (ret > 0)
-	{
-		buf[ret] = '\0';
-		// printf("Buffer read: %s\n", buf); // Debug print
-		if (remainder)
-		{
-			temp = ft_strjoin(remainder, buf);
-			free(remainder);
-			remainder = temp;
-		}
-		else
-			remainder = ft_strdup(buf);
-		if (!remainder)
-		{
-			free(buf);
-			return (NULL);
-		}
-		// printf("Remainder after join: %s\n", remainder); // Debug print
-		newline_index = find_newline(remainder);
-		while (newline_index >= 0)
-		{
-			line = malloc(newline_index + 2);
-			if (!line)
-			{
-				free(buf);
-				free(remainder);
-				return (NULL);
-			}
-			ft_strlcpy(line, remainder, newline_index + 2);
-			temp = ft_strdup(remainder + newline_index + 1);
-			free(remainder);
-			remainder = temp;
-			newline_index = find_newline(remainder);
-			free(buf);
-			// printf("Returning line: %s\n", line);
-			return (line);
-		}
-		ret = read(fd, buf, BUFFER_SIZE);
-	}
-	free(buf);
-	if (remainder && *remainder)
-	{
-		line = ft_strdup(remainder);
-		free(remainder);
-		remainder = NULL;
-		// printf("Returning last line: %s\n", line);
-		return (line);
-	}
-	return (NULL);
+	return (gnl_result_buf(&buf));
 }
