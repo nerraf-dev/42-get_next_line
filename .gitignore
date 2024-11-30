@@ -37,3 +37,15 @@ main.c
 
 gnl_leaks
 gnl_test
+
+*.txt
+
+# Additional entries
+gnl_leaks.dSYM/
+en.subject.pdf
+newlines.txt
+test_newlines
+test_newlines.c
+test_read.c
+
+*.pdf
