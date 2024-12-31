@@ -1,7 +1,7 @@
 # Compiled object files
 *.o
 
-libgnl
+libgnl.a
 
 # Executables
 *.exe

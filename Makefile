@@ -13,7 +13,7 @@ CFLAGS = -Wall -Wextra -Werror
 BUFFER_SIZE ?= 42
 
 # Target library and executable
-LIB = libgnl
+LIB = libgnl.a
 TARGET = main
 
 # Source files
