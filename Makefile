@@ -13,11 +13,11 @@ CFLAGS = -Wall -Wextra -Werror
 BUFFER_SIZE ?= 42
 
 # Target library and executable
-LIBRARY = libgnl.a
+LIB = libgnl
 TARGET = main
 
 # Source files
-SRCS = get_next_line/get_next_line.c get_next_line/get_next_line_utils.c
+SRCS = src/get_next_line.c src/get_next_line_utils.c
 MAIN_SRC = quick_test.c
 
 # Object files
@@ -25,14 +25,14 @@ OBJS = $(SRCS:.c=.o)
 MAIN_OBJ = $(MAIN_SRC:.c=.o)
 
 # Header files
-HEADERS = get_next_line/get_next_line.h
+HEADERS = src/get_next_line.h
 
 # Default rule
-all: $(LIBRARY)
+all: $(LIB)
 
 # Rule to create the library
-$(LIBRARY): $(OBJS)
-	ar rcs $(LIBRARY) $(OBJS)
+$(LIB): $(OBJS)
+	ar rcs $(LIB) $(OBJS)
 
 # Rule to compile source files into object files
 %.o: %.c $(HEADERS)
@@ -40,15 +40,19 @@ $(LIBRARY): $(OBJS)
 
 # Clean rule to remove generated files
 clean:
-	rm -f $(OBJS) $(MAIN_OBJ) $(LIBRARY) $(TARGET)
+	rm -f $(OBJS) $(MAIN_OBJ) $(LIB) $(TARGET)
+
+# Rule to remove all generated files and the library
+fclean: clean
+	rm -f $(LIB)
 
 # Rule to build and run the program with valgrind for leak checking
 leak_check: $(TARGET)
 	valgrind --leak-check=full --track-origins=yes ./$(TARGET) $(ARGS)
 
 # Rule to compile quick_test.c for testing
-test: $(LIBRARY) $(MAIN_OBJ)
-	$(CC) $(CFLAGS) -D BUFFER_SIZE=$(BUFFER_SIZE) $(MAIN_OBJ) $(LIBRARY) -o $(TARGET)
+test: $(LIB) $(MAIN_OBJ)
+	$(CC) $(CFLAGS) -D BUFFER_SIZE=$(BUFFER_SIZE) $(MAIN_OBJ) $(LIB) -o $(TARGET)
 
 # Phony targets
 .PHONY: all clean leak_check test

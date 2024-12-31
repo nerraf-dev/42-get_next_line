@@ -1,6 +1,8 @@
 # Compiled object files
 *.o
 
+libgnl
+
 # Executables
 *.exe
 *.out
