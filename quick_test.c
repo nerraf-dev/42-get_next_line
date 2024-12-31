@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "./get_next_line/get_next_line.h"
+#include "./src/get_next_line.h"
 
 int	read_file(char **argv)
 {
@@ -23,10 +23,14 @@ int	main(int argc, char **argv)
 	int		fd;
 	char	*line;
 
+	printf("argc: %d\n", argc);
 	if (argc == 1)
+	{
 		fd = 0;
+		exit(1);
+	}
 	else if (argc == 2)
-		fd = read_file(argv[1]);
+		fd = read_file(argv);
 	else
 	{
 		fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
@@ -37,6 +41,7 @@ int	main(int argc, char **argv)
 	{
 		printf("%s", line);
 		free(line);
+		line = get_next_line(fd);
 	}
 	if (fd != 0)
 		close(fd);
