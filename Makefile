@@ -7,7 +7,7 @@ else
 endif
 
 # Compiler flags
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 # Default buffer size
 BUFFER_SIZE ?= 42
