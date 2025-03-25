@@ -51,3 +51,4 @@ test_newlines.c
 test_read.c
 
 *.pdf
+test

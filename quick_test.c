@@ -6,7 +6,7 @@
 /*   By: sfarren <sfarren@student.42malaga.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 14:06:18 by sfarren           #+#    #+#             */
-/*   Updated: 2025/01/08 14:07:00 by sfarren          ###   ########.fr       */
+/*   Updated: 2025/03/24 12:41:04 by sfarren          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	read_file(char **argv)
 	if (fd < 0)
 	{
 		perror("Error opening file");
-		return (1);
+		exit (1);
 	}
 	return (fd);
 }
@@ -37,10 +37,13 @@ int	main(int argc, char **argv)
 	if (argc == 1)
 	{
 		fd = 0;
-		exit(1);
+		// exit(1);
 	}
 	else if (argc == 2)
+	{
 		fd = read_file(argv);
+		printf("fd: %d\n", fd);
+	}
 	else
 	{
 		fprintf(stderr, "Usage: %s [filename]\n", argv[0]);

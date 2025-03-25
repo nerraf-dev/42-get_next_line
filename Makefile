@@ -14,7 +14,7 @@ BUFFER_SIZE ?= 42
 
 # Target library and executable
 LIB = libgnl.a
-TARGET = main
+TARGET = test
 
 # Source files
 SRCS = src/get_next_line.c src/get_next_line_utils.c
